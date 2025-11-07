@@ -1,0 +1,6 @@
+name = "cyberchef"
+compatibility_date = "2024-11-07"
+
+# Cloudflare Workers static assets configuration
+[assets]
+directory = "./build/prod"
