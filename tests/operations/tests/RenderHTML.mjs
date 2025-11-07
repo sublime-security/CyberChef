@@ -64,4 +64,70 @@ TestRegister.addTests([
             },
         ],
     },
+    {
+        name: "Render HTML: XSS prevention - attribute injection in width",
+        input: "<p>Test</p>",
+        expectedMatch: /width: 100%;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["100%\" onload=\"alert(1)\"", "500px"],
+            },
+        ],
+    },
+    {
+        name: "Render HTML: XSS prevention - attribute injection in height",
+        input: "<p>Test</p>",
+        expectedMatch: /height: 500px;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["100%", "500px\" onload=\"alert(1)\""],
+            },
+        ],
+    },
+    {
+        name: "Render HTML: XSS prevention - script tag in width",
+        input: "<p>Test</p>",
+        expectedMatch: /width: 100%;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["<script>alert(1)</script>", "500px"],
+            },
+        ],
+    },
+    {
+        name: "Render HTML: XSS prevention - event handler in height",
+        input: "<p>Test</p>",
+        expectedMatch: /height: 500px;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["100%", "' onerror='alert(1)'"],
+            },
+        ],
+    },
+    {
+        name: "Render HTML: valid dimension with decimal",
+        input: "<p>Test</p>",
+        expectedMatch: /width: 50.5%;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["50.5%", "500px"],
+            },
+        ],
+    },
+    {
+        name: "Render HTML: valid dimension with vh unit",
+        input: "<p>Test</p>",
+        expectedMatch: /height: 80vh;/,
+        recipeConfig: [
+            {
+                op: "Render HTML",
+                args: ["100%", "80vh"],
+            },
+        ],
+    },
 ]);

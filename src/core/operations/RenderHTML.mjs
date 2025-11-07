@@ -38,16 +38,47 @@ class RenderHTML extends Operation {
     }
 
     /**
+     * Validates and sanitizes CSS dimension values to prevent XSS.
+     * Only allows numbers followed by valid CSS units or percentage.
+     *
+     * @param {string} value - The dimension value to validate
+     * @param {string} defaultValue - The default value to use if validation fails
+     * @returns {string} - The validated dimension or default value
+     */
+    validateDimension(value, defaultValue) {
+        // Strict allowlist: digits (with optional decimal) followed by valid CSS unit or %
+        // Valid units: px, em, rem, vh, vw, %, vmin, vmax, ch, ex
+        const validPattern = /^(\d+\.?\d*)(px|em|rem|vh|vw|%|vmin|vmax|ch|ex)$/;
+
+        if (typeof value !== "string") {
+            return defaultValue;
+        }
+
+        const trimmed = value.trim();
+        const match = trimmed.match(validPattern);
+
+        if (match) {
+            return trimmed;
+        }
+
+        return defaultValue;
+    }
+
+    /**
      * @param {string} input
      * @param {Object[]} args
      * @returns {html}
      */
     run(input, args) {
-        const [width, height] = args;
+        const [widthInput, heightInput] = args;
 
         if (!input || input.length === 0) {
             return "<div>No HTML content to render</div>";
         }
+
+        // Validate dimensions to prevent XSS via attribute injection
+        const width = this.validateDimension(widthInput, "100%");
+        const height = this.validateDimension(heightInput, "500px");
 
         // Encode the HTML for use in data URI
         const encodedHTML = encodeURIComponent(input);
