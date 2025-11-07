@@ -1,4 +1,6 @@
 name: "Pull Requests"
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
