@@ -192,26 +192,20 @@ The Cloudflare Workers build system is configured as follows:
 - **Build Command**: `npm run build:cloudflare`
 - **Deploy Command**: `npx wrangler deploy`
 - **Output Directory**: `build/prod`
-- **Environment Variable**: `NODE_VERSION=18` (set in Cloudflare dashboard)
 
-**Important:** The build uses Node.js v18 (via NODE_VERSION env var), while Wrangler deploy automatically uses Node.js v20+ (Cloudflare's default). This is necessary because:
-- CyberChef requires Node 18 for building (uses deprecated `assert` syntax)
-- Wrangler requires Node 20+ for deployment
+**Note:** Cloudflare will automatically detect and use Node.js v22 from the `.nvmrc` file. No environment variables are needed.
 
 ### Manual Build/Deploy (For Local Testing Only)
 
 If you need to test locally before pushing:
 
 ```bash
-# Switch to Node v18 for building
-nvm use 18
+# Switch to Node v22
+nvm use 22
 npm run build
 
 # Remove files we don't want to deploy
 rm build/prod/*.zip build/prod/BundleAnalyzerReport.html
-
-# Switch to Node v20+ for Wrangler
-nvm use 22  # or any version >= 20
 
 # Deploy to Cloudflare Workers (for testing only)
 npx wrangler deploy
@@ -221,13 +215,12 @@ npx wrangler deploy
 
 ### Prerequisites
 
-- **Node.js v18** - Required for building CyberChef (specified in `.nvmrc`)
-- **Node.js v20+** - Required for running Wrangler deployment commands
-- **nvm** or similar Node version manager - Recommended for switching between Node versions
+- **Node.js v22** - Required for building and deploying CyberChef (specified in `.nvmrc`)
+- **nvm** or similar Node version manager - Recommended for local development
 
 ### Build Process
 
-The build MUST be done with Node.js v18 due to CyberChef's use of the `assert` syntax for JSON imports, which is deprecated in newer Node versions.
+CyberChef builds with Node.js v22, which is compatible with both the build process and Wrangler deployment. The codebase uses the modern `with {type: "json"}` syntax for JSON imports (import attributes), which is supported in Node 20+.
 
 This creates the production bundle in `./build/prod/` including:
 - `index.html` - Main HTML file
@@ -257,13 +250,9 @@ This creates the production bundle in `./build/prod/` including:
 
 ### Troubleshooting
 
-**Error: "Unexpected identifier 'assert'"**
-- You're running the build with Node.js v20+ instead of v18
-- Solution: `nvm use 18 && npm run build`
-
-**Error: "Wrangler requires at least Node.js v20.0.0"**
-- You're trying to deploy with Node.js v18
-- Solution: `nvm use 22 && npx wrangler deploy`
+**Error: "Unexpected identifier 'assert'" or "Unexpected identifier 'with'"**
+- Check that you're using Node.js v22 as specified in `.nvmrc`
+- Solution: `nvm use 22 && npm run build`
 
 **Error: "Asset too large"**
 - The `CyberChef_v*.zip` file is in the build directory
@@ -274,6 +263,5 @@ This creates the production bundle in `./build/prod/` including:
 - All processing is client-side; no data sent to servers
 - Webpack builds can take significant time (large dependency tree)
 - File size limit ~2GB depending on browser
-- Node.js version 18 required for building (see `.nvmrc`)
-- Node.js version 20+ required for Wrangler deployment
+- Node.js version 22 required for building and deployment (see `.nvmrc`)
 - Some operations use legacy crypto algorithms requiring `--openssl-legacy-provider` flag
