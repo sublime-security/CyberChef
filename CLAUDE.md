@@ -189,9 +189,14 @@ CyberChef is configured for **automated CI/CD deployment** to Cloudflare Workers
 The Cloudflare Workers build system is configured as follows:
 
 - **Root Directory**: `/`
-- **Build Command**: `nvm use 18 && npm install && npm run build && rm -f build/prod/*.zip build/prod/BundleAnalyzerReport.html`
+- **Build Command**: `npm run build:cloudflare`
 - **Deploy Command**: `npx wrangler deploy`
 - **Output Directory**: `build/prod`
+- **Environment Variable**: `NODE_VERSION=18` (set in Cloudflare dashboard)
+
+**Important:** The build uses Node.js v18 (via NODE_VERSION env var), while Wrangler deploy automatically uses Node.js v20+ (Cloudflare's default). This is necessary because:
+- CyberChef requires Node 18 for building (uses deprecated `assert` syntax)
+- Wrangler requires Node 20+ for deployment
 
 ### Manual Build/Deploy (For Local Testing Only)
 
