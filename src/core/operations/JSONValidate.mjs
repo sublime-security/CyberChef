@@ -5,7 +5,6 @@
  */
 
 import JSON5 from "json5";
-import OperationError from "../errors/OperationError.mjs";
 import Operation from "../Operation.mjs";
 import Utils from "../Utils.mjs";
 
@@ -109,11 +108,11 @@ class JSONValidate extends Operation {
      */
     getJSONStats(json) {
         const type = Array.isArray(json) ? "Array" :
-                    json === null ? "Null" :
-                    typeof json === "object" ? "Object" :
+            json === null ? "Null" :
+                typeof json === "object" ? "Object" :
                     typeof json === "string" ? "String" :
-                    typeof json === "number" ? "Number" :
-                    typeof json === "boolean" ? "Boolean" : "Unknown";
+                        typeof json === "number" ? "Number" :
+                            typeof json === "boolean" ? "Boolean" : "Unknown";
 
         const stats = { type };
 
@@ -145,11 +144,11 @@ class JSONValidate extends Operation {
 
         if (positionMatch) {
             if (positionMatch[2]) {
-                line = parseInt(positionMatch[1]);
-                column = parseInt(positionMatch[2]);
+                line = parseInt(positionMatch[1], 10);
+                column = parseInt(positionMatch[2], 10);
             } else {
                 // If only position is given, calculate line and column
-                const position = parseInt(positionMatch[1]);
+                const position = parseInt(positionMatch[1], 10);
                 const lines = input.substring(0, position).split("\n");
                 line = lines.length;
                 column = lines[lines.length - 1].length + 1;
