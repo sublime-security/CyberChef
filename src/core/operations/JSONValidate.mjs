@@ -6,7 +6,6 @@
 
 import JSON5 from "json5";
 import Operation from "../Operation.mjs";
-import Utils from "../Utils.mjs";
 
 /**
  * JSON Validate operation
@@ -24,7 +23,6 @@ class JSONValidate extends Operation {
         this.description = "Validates JavaScript Object Notation (JSON) code and provides detailed error messages if the JSON is invalid.<br><br>Supports both standard JSON and JSON5 formats (with comments, trailing commas, etc.).<br><br>Tags: json validator, json checker, json lint, syntax check";
         this.inputType = "string";
         this.outputType = "string";
-        this.presentType = "html";
         this.args = [
             {
                 name: "JSON Standard",
@@ -179,31 +177,11 @@ class JSONValidate extends Operation {
         message = message.replace(/at (?:line )?(\d+)(?: column | col )?(\d+)?/i, "").trim();
 
         return {
-            message: Utils.escapeHtml(message),
+            message,
             line,
             column,
-            context: Utils.escapeHtml(context)
+            context
         };
-    }
-
-    /**
-     * Displays the validation result with syntax highlighting
-     *
-     * @param {string} data
-     * @param {Object[]} args
-     * @returns {html}
-     */
-    present(data, args) {
-        const compactOutput = args[1];
-
-        if (compactOutput || data.startsWith("✗")) {
-            // For compact output or errors, just escape and return
-            return `<pre>${Utils.escapeHtml(data)}</pre>`;
-        }
-
-        // For successful validation, format nicely with some color
-        const escapedData = Utils.escapeHtml(data);
-        return `<pre style="color: #0f0;">${escapedData}</pre>`;
     }
 }
 

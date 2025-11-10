@@ -196,11 +196,27 @@ TestRegister.addTests([
    npm test
    ```
 
+### Output Format Best Practices
+
+- **Prefer plain text output**: Most operations should return plain string output without HTML formatting
+  - Do NOT set `this.presentType = "html"` unless absolutely necessary
+  - Do NOT implement a `present()` method unless you need custom HTML rendering
+  - Examples of plain text operations: "Parse IPv6 address", "Entropy", "Detect File Type"
+
+- **When to use HTML presentation**:
+  - Only use when you need interactive elements (collapsible sections, syntax highlighting, etc.)
+  - Examples that justify HTML: "JSON Beautify" (collapsible tree view), "Syntax highlighter"
+  - If using HTML, you must implement both:
+    - `this.presentType = "html"`
+    - `present(data, args)` method that returns HTML string
+
+- **General rule**: If your operation just displays text information, use plain text output. Keep it simple.
+
 ### Security Considerations
 
-- **Always sanitize HTML output**: Use `Utils.escapeHtml()` for any user data displayed in HTML
+- **Always sanitize HTML output**: If you use `presentType = "html"`, use `Utils.escapeHtml()` for any user data
 - **Avoid XSS vulnerabilities**: Never use `innerHTML` with unsanitized data
-- **Error messages**: Escape error messages before displaying them
+- **Plain text is safer**: When in doubt, use plain text output instead of HTML
 - **Pattern**: Look at existing operations for security best practices
 
 ### Interactive Script Method (Alternative)
