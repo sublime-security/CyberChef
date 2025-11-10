@@ -132,15 +132,85 @@ TestRegister.addTests([
 
 ## Adding New Operations
 
-1. Run `npm run newop` to generate template
-2. Implement in `src/core/operations/YourOperation.mjs`
-3. Key methods to implement:
-   - Constructor with metadata and args
-   - `run(input, args)` - core logic
-   - Optional: `highlight()` / `highlightReverse()`
-   - Optional: `checks` for auto-detection
-4. Add tests in `tests/operations/tests/YourOperation.mjs`
-5. Operation automatically registered during build
+**IMPORTANT:** The `npm run newop` script can be problematic in interactive environments. It's often easier to manually create operation files by copying existing similar operations as templates.
+
+### Manual Creation Method (Recommended)
+
+1. **Find a similar operation** to use as a template:
+   ```bash
+   # Look for similar operations in src/core/operations/
+   ls src/core/operations/ | grep -i <keyword>
+   ```
+
+2. **Create the operation file** at `src/core/operations/YourOperation.mjs`:
+   - Copy structure from a similar operation (e.g., JSONBeautify.mjs, JSONMinify.mjs)
+   - Key components to include:
+     - Import statements: `Operation`, `OperationError`, `Utils`, and any libraries
+     - Constructor with:
+       - `this.name` - Display name (e.g., "JSON Validate")
+       - `this.module` - Module category (e.g., "Code", "Crypto", "Default")
+       - `this.description` - HTML description with tags for search
+       - `this.inputType` / `this.outputType` - Data types
+       - `this.args` - Array of argument definitions
+     - `run(input, args)` method - Core operation logic
+     - Optional: `present(data, args)` - Custom HTML presentation
+     - Optional: `highlight()` / `highlightReverse()` - Position mapping
+     - Export: `export default YourOperation;`
+
+3. **Add operation to category** in `src/core/config/Categories.json`:
+   - Find the appropriate category (e.g., "Code", "Data format", "Encryption")
+   - Add operation name to the `"ops"` array
+   - This step is **required** - operations not in a category will fail tests
+
+4. **Create test file** at `tests/operations/tests/YourOperation.mjs`:
+   - Use `TestRegister.addTests()` format
+   - Include tests for:
+     - Valid inputs (various types)
+     - Edge cases (empty input, large input)
+     - Invalid inputs (error handling)
+     - Different argument combinations
+   - Use regex patterns (`/pattern/`) for flexible output matching
+   - Example test structure:
+     ```javascript
+     TestRegister.addTests([
+         {
+             name: "Operation Name: test case description",
+             input: "test input",
+             expectedOutput: "expected output", // or /regex pattern/
+             recipeConfig: [
+                 {
+                     op: "Operation Name",
+                     args: [arg1, arg2],
+                 },
+             ],
+         },
+     ]);
+     ```
+
+5. **Run tests** to verify:
+   ```bash
+   # Ensure you're using Node v22
+   nvm use 22
+
+   # Run all tests
+   npm test
+   ```
+
+### Security Considerations
+
+- **Always sanitize HTML output**: Use `Utils.escapeHtml()` for any user data displayed in HTML
+- **Avoid XSS vulnerabilities**: Never use `innerHTML` with unsanitized data
+- **Error messages**: Escape error messages before displaying them
+- **Pattern**: Look at existing operations for security best practices
+
+### Interactive Script Method (Alternative)
+
+If you want to try the interactive script:
+```bash
+npm run newop
+```
+
+**Note:** This script may hang or have issues with stdin in some environments. If it doesn't work after 10 seconds, use the manual method instead.
 
 ## Key Data Types (Dish Types)
 
